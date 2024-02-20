@@ -1,9 +1,23 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import getConfig from "next/config";
+import { Page } from "@/components/page";
 import { VideoEditor } from "@/components/video-editor";
 
-export default function Home() {
+export default async function Home() {
+  const { serverRuntimeConfig } = getConfig();
+  const transcript = await fs.readFile(
+    path.join(
+      serverRuntimeConfig.PROJECT_ROOT,
+      "public",
+      "defaults",
+      "transcript.txt",
+    ),
+  );
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <VideoEditor />
-    </main>
+    <Page>
+      <VideoEditor transcript={transcript.toString()} />
+    </Page>
   );
 }
