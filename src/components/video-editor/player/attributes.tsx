@@ -12,16 +12,16 @@ export const Attributes = ({}) => {
   return (
     <div className="flex gap-4 bg-slate-200 p-4">
       <div className="flex cursor-pointer items-center space-x-2">
-        <Checkbox id="subtitles" />
+        <Checkbox id="subtitles" className="bg-white" />
         <Label
           htmlFor="subtitles"
           className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          Subtitles
+          Show subtitles
         </Label>
       </div>
       <div className="flex cursor-pointer items-center space-x-2">
-        <Checkbox id="intro" />
+        <Checkbox id="intro" className="bg-white" />
         <Label
           htmlFor="intro"
           className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -30,7 +30,7 @@ export const Attributes = ({}) => {
         </Label>
       </div>
       <div className="flex cursor-pointer items-center space-x-2">
-        <Checkbox id="logo" />
+        <Checkbox id="logo" className="bg-white" />
         <Label
           htmlFor="logo"
           className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
