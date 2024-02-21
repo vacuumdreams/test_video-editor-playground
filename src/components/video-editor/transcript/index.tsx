@@ -17,6 +17,7 @@ export const Transcript = ({ text }: TranscriptProps) => {
           placeholder="Search"
           type="search"
           className="rounded-full pl-10"
+          disabled
         />
       </div>
       {text}

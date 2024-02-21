@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { InfoIcon, PlayIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -11,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Transcript } from "./transcript";
 import { VideoPlayer } from "./player";
+import { VideoUpload } from "./upload/video";
+import { TranscriptUpload } from "./upload/transcript";
 
 type VideoEditorProps = {
   transcript: string;
@@ -20,16 +26,39 @@ export const VideoEditor = ({
   transcript: defaultTranscript,
 }: VideoEditorProps) => {
   const [crop, setCrop] = useState<[number, number]>([0, 0]);
-  const [video, setVideo] = useState("/defaults/video.mp4");
-  const [transcript, setTranscript] = useState(defaultTranscript);
+  // const [video, setVideo] = useState("/defaults/video.mp4");
+  // const [transcript, setTranscript] = useState(defaultTranscript);
+  const [video, setVideo] = useState<null | string>(null);
+  const [transcript, setTranscript] = useState<null | string>(null);
 
   return (
     <div className="grid grid-cols-3">
       <div className="col-span-2 h-full bg-slate-200">
         {video && <VideoPlayer src={video} crop={crop} setCrop={setCrop} />}
         {!video && (
-          <div className="flex w-full justify-center pt-12">
-            <Button>Upload video</Button>
+          <div>
+            <div className="flex aspect-video w-full items-center justify-center p-4">
+              <VideoUpload onSubmit={({ videoUrl }) => setVideo(videoUrl)} />
+            </div>
+            <div className="flex items-center justify-between border-x border-b border-slate-200 bg-white p-4">
+              <div>
+                <Button className="flex w-32 gap-4" disabled>
+                  <PlayIcon />
+                  {"00:00"}
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="auto-crop">Auto-crop</Label>
+                  <Switch id="auto-crop" disabled />
+                  <InfoIcon className="text-slate-200" />
+                  <div className="flex gap-2">
+                    <Input className="w-16" value={"00:00"} disabled />
+                    <Input className="w-16" value={"00:00"} disabled />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -42,7 +71,9 @@ export const VideoEditor = ({
           <TabsContent value="transcript">
             {!transcript && (
               <div className="flex w-full justify-center pt-12">
-                <Button>Upload transcript</Button>
+                <TranscriptUpload
+                  onSubmit={({ transcript }) => setTranscript(transcript)}
+                />
               </div>
             )}
             {transcript && <Transcript text={transcript} />}
