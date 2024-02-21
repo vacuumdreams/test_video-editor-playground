@@ -39,12 +39,7 @@ export const TranscriptUpload = ({ onSubmit }: TranscriptUploadProps) => {
 
   return (
     <form onChange={handleChange}>
-      <input
-        ref={inputRef}
-        type="file"
-        className="hidden"
-        accept=".txt,.srt,.vtt"
-      />
+      <input ref={inputRef} type="file" className="hidden" accept=".txt,.srt" />
       <Button
         type="button"
         onClick={() => {

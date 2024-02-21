@@ -50,8 +50,9 @@ export const VideoPlayer = ({
         {src && <source src={src} type="video/mp4" />}
         {showSubtitles && (
           <track
+            default
             kind="subtitles"
-            src="defaults/trascript.txt"
+            src="defaults/transcript.txt"
             srcLang="en"
             label="English"
           />

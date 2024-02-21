@@ -32,8 +32,8 @@ export const VideoEditor = ({
   const [transcript, setTranscript] = useState<null | string>(null);
 
   return (
-    <div className="grid grid-cols-3">
-      <div className="col-span-2 h-full bg-slate-200">
+    <div className="grid h-screen grid-cols-3 items-start overflow-hidden">
+      <div className="col-span-2 bg-slate-200">
         {video && <VideoPlayer src={video} crop={crop} setCrop={setCrop} />}
         {!video && (
           <div>
@@ -62,7 +62,7 @@ export const VideoEditor = ({
           </div>
         )}
       </div>
-      <div className="col-span-1 flex justify-center p-4">
+      <div className="col-span-1 flex h-screen justify-center overflow-scroll p-4">
         <Tabs defaultValue="transcript" className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="transcript">Transcript</TabsTrigger>
@@ -70,7 +70,7 @@ export const VideoEditor = ({
           </TabsList>
           <TabsContent value="transcript">
             {!transcript && (
-              <div className="flex w-full justify-center pt-12">
+              <div className="flex w-full justify-center overflow-y-auto pt-12">
                 <TranscriptUpload
                   onSubmit={({ transcript }) => setTranscript(transcript)}
                 />
