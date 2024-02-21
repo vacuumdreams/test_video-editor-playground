@@ -6,22 +6,36 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { formatTime } from "@/lib/utils";
 
 type ControlsProps = {
+  currentTime: number;
+  duration: number;
+  crop: [number, number];
+  setCrop: (crop: [number, number]) => void;
   isPlaying: boolean;
   setPlaying: (playing: boolean) => void;
 };
 
-export const Controls = ({ isPlaying, setPlaying }: ControlsProps) => {
+export const Controls = ({
+  crop,
+  currentTime,
+  isPlaying,
+  setPlaying,
+}: ControlsProps) => {
   return (
     <div className="flex items-center justify-between border-x border-slate-200 bg-white p-4">
       <div>
-        <Button onClick={() => setPlaying(!isPlaying)}>
+        <Button
+          className="flex w-32 gap-4"
+          onClick={() => setPlaying(!isPlaying)}
+        >
           {!isPlaying && <PlayIcon />}
           {isPlaying && <PauseIcon />}
+          {formatTime(currentTime)}
         </Button>
       </div>
       <div className="flex gap-2">
@@ -40,26 +54,8 @@ export const Controls = ({ isPlaying, setPlaying }: ControlsProps) => {
           </TooltipProvider>
         </div>
         <div className="flex gap-2">
-          <div>
-            <Input
-              value="00:00"
-              type="time"
-              step="10"
-              min="00:00"
-              max="00:53"
-              onChange={() => {}}
-            />
-          </div>
-          <div>
-            <Input
-              value="00:53"
-              type="time"
-              step="10"
-              min="00:00"
-              max="00:53"
-              onChange={() => {}}
-            />
-          </div>
+          <Input className="w-16" value={formatTime(crop[0])} disabled />
+          <Input className="w-16" value={formatTime(crop[1])} disabled />
         </div>
       </div>
     </div>

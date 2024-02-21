@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -21,13 +19,19 @@ type VideoEditorProps = {
 export const VideoEditor = ({
   transcript: defaultTranscript,
 }: VideoEditorProps) => {
+  const [crop, setCrop] = useState<[number, number]>([0, 0]);
   const [video, setVideo] = useState("/defaults/video.mp4");
   const [transcript, setTranscript] = useState(defaultTranscript);
 
   return (
     <div className="grid grid-cols-3">
       <div className="col-span-2 h-full bg-slate-200">
-        <VideoPlayer src={video} />
+        {video && <VideoPlayer src={video} crop={crop} setCrop={setCrop} />}
+        {!video && (
+          <div className="flex w-full justify-center pt-12">
+            <Button>Upload video</Button>
+          </div>
+        )}
       </div>
       <div className="col-span-1 flex justify-center p-4">
         <Tabs defaultValue="transcript" className="w-[400px]">

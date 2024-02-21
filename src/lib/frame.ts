@@ -42,9 +42,7 @@ export async function getFrames(
 
       let video = document.createElement("video");
       video.preload = "auto";
-      console.log("waiting begins");
       video.addEventListener("loadeddata", async function () {
-        console.log("oh well");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         duration = video.duration;
