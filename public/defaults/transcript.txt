@@ -10,8 +10,11 @@ Botond: Let's start.
 [00:12-00:15]
 Botond: This is a cup of coffee.
 
-[00:15-00:20]
-Botond: This is a bottle of water. This is a pair of headphones.
+[00:15-00:18]
+Botond: This is a bottle of water.
+
+[00:19-00:21]
+This is a pair of headphones.
 
 [00:24-00:28]
 Botond: This is a container of Himalayan salt.

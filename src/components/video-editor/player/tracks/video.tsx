@@ -6,7 +6,7 @@ import { FilmIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrackSlider } from "./track-slider";
 
-const THUMBS_LENGTH = 12;
+const THUMBS_LENGTH = 15;
 
 const createThumbList = async (
   videoUrl: string,

@@ -17,7 +17,10 @@ export default async function Home() {
 
   return (
     <Page>
-      <VideoEditor transcript={transcript.toString()} />
+      <VideoEditor
+        videoUrl="/defaults/video.mp4"
+        transcript={transcript.toString()}
+      />
     </Page>
   );
 }

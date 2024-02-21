@@ -1,42 +1,33 @@
-import { useRef, useState, useEffect } from "react";
-
 import { Progress } from "@/components/ui/progress";
 
 import { Controls } from "./controls";
 import { Attributes } from "./attributes";
 import { VideoTrack } from "./tracks";
 import { PlaySlider } from "./play-slider";
+import { useVideo } from "../provider";
 
 type VideoPlayerProps = {
   src: string;
-  crop: [number, number];
-  setCrop: (crop: [number, number]) => void;
 };
 
-export const VideoPlayer = ({
-  src: sourceUrl,
-  crop,
-  setCrop,
-}: VideoPlayerProps) => {
-  const [src, setSrc] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [showSubtitles, setSubtitles] = useState(false);
-  const [addIntro, setIntro] = useState(false);
-  const [logoPosition, setLogoPosition] = useState<null | string>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    videoRef.current?.addEventListener("loadeddata", (e) => {
-      if (videoRef.current !== null) {
-        setDuration(videoRef.current.duration);
-        setCrop([0, videoRef.current.duration]);
-      }
-    });
-
-    setSrc(sourceUrl);
-  }, [sourceUrl]);
+export const VideoPlayer = ({ src: sourceUrl }: VideoPlayerProps) => {
+  const {
+    src,
+    videoRef,
+    isPlaying,
+    setIsPlaying,
+    crop,
+    setCrop,
+    duration,
+    currentTime,
+    setCurrentTime,
+    logoPosition,
+    setLogoPosition,
+    addIntro,
+    setIntro,
+    showSubtitles,
+    setSubtitles,
+  } = useVideo();
 
   return (
     <div>
@@ -97,6 +88,8 @@ export const VideoPlayer = ({
           />
           <div className="absolute top-0 h-full w-full">
             <PlaySlider
+              min={(crop[0] * 100) / duration}
+              max={(crop[1] * 100) / duration}
               value={[(currentTime * 100) / duration]}
               onValueChange={([v]) => {
                 if (videoRef.current) {
