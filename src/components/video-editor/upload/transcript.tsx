@@ -27,7 +27,7 @@ export const TranscriptUpload = ({ onSubmit }: TranscriptUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const handleChange: FormEventHandler<HTMLFormElement> = useCallback(
     async (e) => {
-      // eslint-disable-next-line
+      // @ts-ignore
       const file = e.target.files?.[0];
       if (file) {
         const transcript = await getTextContent(file);

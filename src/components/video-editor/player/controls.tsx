@@ -27,8 +27,8 @@ export const Controls = ({
   setPlaying,
 }: ControlsProps) => {
   return (
-    <div className="flex items-center justify-between border-x border-slate-200 bg-white p-4">
-      <div>
+    <div className="items-center justify-between border-x border-slate-200 bg-white p-4 md:flex">
+      <div className="mb-4 md:mb-0">
         <Button
           className="flex w-32 gap-4"
           onClick={() => setPlaying(!isPlaying)}
@@ -47,15 +47,13 @@ export const Controls = ({
               <TooltipTrigger asChild>
                 <InfoIcon className="text-slate-200" />
               </TooltipTrigger>
-              <TooltipContent>
-                This feature is not available. Mwahahaha.
-              </TooltipContent>
+              <TooltipContent>This feature is not available.</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
         <div className="flex gap-2">
-          <Input className="w-16" value={formatTime(crop[0])} disabled />
-          <Input className="w-16" value={formatTime(crop[1])} disabled />
+          <Input className="w-24" value={formatTime(crop[0] || 0)} disabled />
+          <Input className="w-24" value={formatTime(crop[1] || 0)} disabled />
         </div>
       </div>
     </div>

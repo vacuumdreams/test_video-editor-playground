@@ -8,11 +8,13 @@ export function cn(...inputs: ClassValue[]) {
 export function formatTime(seconds: number) {
   const totalSeconds = Math.floor(seconds);
 
-  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const remainingSeconds = totalSeconds % 60;
 
+  const paddedHours = String(hours).padStart(2, "0");
   const paddedMinutes = String(minutes).padStart(2, "0");
   const paddedSeconds = String(remainingSeconds).padStart(2, "0");
 
-  return `${paddedMinutes}:${paddedSeconds}`;
+  return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
 }

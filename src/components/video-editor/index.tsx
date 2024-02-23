@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  InfoIcon,
-  PlayIcon,
-  FilmIcon,
-  ScrollTextIcon,
-  WandIcon,
-  DownloadIcon,
-} from "lucide-react";
+import { InfoIcon, PlayIcon, WandIcon, DownloadIcon } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +17,6 @@ import { VideoProvider } from "./provider";
 import { Transcript } from "./transcript";
 import { VideoPlayer } from "./player";
 import { VideoUpload } from "./upload/video";
-import { TranscriptUpload } from "./upload/transcript";
 import { cn } from "@/lib/utils";
 
 type VideoEditorProps = {
@@ -41,16 +33,22 @@ export const VideoEditor = ({
 
   return (
     <VideoProvider src={video}>
-      <div className="grid h-screen grid-cols-3 items-start overflow-hidden">
-        <div className="col-span-2 bg-slate-200">
-          {video && <VideoPlayer src={video} />}
+      <div className="grid h-screen items-start overflow-hidden md:grid-cols-3">
+        <div className="bg-slate-200 md:col-span-2">
+          {video && (
+            <VideoPlayer
+              transcript={transcript}
+              setVideo={setVideo}
+              setTranscript={setTranscript}
+            />
+          )}
           {!video && (
             <div>
               <div className="flex aspect-video w-full items-center justify-center p-4">
                 <VideoUpload onSubmit={({ videoUrl }) => setVideo(videoUrl)} />
               </div>
-              <div className="flex items-center justify-between border-x border-b border-slate-200 bg-white p-4">
-                <div>
+              <div className="items-center justify-between border-x border-b border-slate-200 bg-white p-4 sm:flex">
+                <div className="mb-4 sm:mb-0">
                   <Button className="flex w-32 gap-4" disabled>
                     <PlayIcon />
                     {"00:00"}
@@ -71,21 +69,18 @@ export const VideoEditor = ({
             </div>
           )}
         </div>
-        <div className="col-span-1 flex h-screen justify-center overflow-scroll p-4">
+        <div className="flex h-screen justify-center overflow-scroll p-4 md:col-span-1">
           <Tabs defaultValue="transcript" className="w-[400px]">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="transcript">Transcript</TabsTrigger>
               <TabsTrigger value="summary">Summary</TabsTrigger>
             </TabsList>
             <TabsContent value="transcript">
-              {!transcript && (
-                <div className="flex w-full justify-center overflow-y-auto pt-12">
-                  <TranscriptUpload
-                    onSubmit={({ transcript }) => setTranscript(transcript)}
-                  />
-                </div>
-              )}
-              {transcript && <Transcript text={transcript} />}
+              <Transcript
+                transcript={transcript}
+                setTranscript={setTranscript}
+                setVideo={setVideo}
+              />
             </TabsContent>
             <TabsContent value="summary">
               <Card>
@@ -100,21 +95,7 @@ export const VideoEditor = ({
           </Tabs>
         </div>
       </div>
-      <div className="fixed bottom-0 left-0 flex w-full bg-slate-100 p-4">
-        <div className="flex gap-2">
-          {video && (
-            <Button className="flex gap-2" onClick={() => setVideo(null)}>
-              <FilmIcon />
-              <span>Delete video</span>
-            </Button>
-          )}
-          {transcript && (
-            <Button className="flex gap-2" onClick={() => setTranscript(null)}>
-              <ScrollTextIcon />
-              <span>Delete transcript</span>
-            </Button>
-          )}
-        </div>
+      <div className="fixed bottom-0 left-0 z-30 flex w-full bg-slate-100 p-4">
         <div className="flex w-full justify-end gap-2">
           {!video && !transcript && (
             <Button

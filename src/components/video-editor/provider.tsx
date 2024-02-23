@@ -54,6 +54,7 @@ export const VideoProvider = ({
       }
     });
     setSrc(sourceUrl);
+    videoRef.current?.load();
   }, [sourceUrl]);
 
   return (

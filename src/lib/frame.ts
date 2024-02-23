@@ -28,11 +28,7 @@ function storeFrame(
   resolve(canvas.toDataURL());
 }
 
-export async function getFrames(
-  videoUrl: string,
-  amount: number,
-  type: "fps" | "total" = "total",
-) {
+export async function getFrames(videoUrl: string, amount: number) {
   return new Promise(
     (resolve: (frames: string[]) => void, reject: (error: string) => void) => {
       let frames: string[] = [];
@@ -47,11 +43,7 @@ export async function getFrames(
         canvas.height = video.videoHeight;
         duration = video.duration;
 
-        let totalFrames: number = amount;
-        if (type === "fps") {
-          totalFrames = duration * amount;
-        }
-        for (let time = 0; time < duration; time += duration / totalFrames) {
+        for (let time = 0; time < duration; time += duration / amount) {
           frames.push(await getVideoFrame(video, context, canvas, time));
         }
         resolve(frames);
