@@ -7,7 +7,8 @@ import { Attributes } from "./attributes";
 import { VideoTrack } from "./tracks";
 import { PlaySlider } from "./play-slider";
 import { useVideo } from "../provider";
-import { doCrop } from "@/lib/video";
+import { LOGO_URL, doCrop } from "@/lib/video";
+import { cn } from "@/lib/utils";
 import {
   filterTranscript,
   TranscriptResult,
@@ -53,6 +54,7 @@ export const VideoPlayer = ({
   const {
     src,
     videoRef,
+    logoPosition,
     crop,
     setCrop,
     setPlaying,
@@ -102,6 +104,20 @@ export const VideoPlayer = ({
             />
           )}
         </video>
+        {logoPosition && (
+          <img
+            src={LOGO_URL}
+            alt="logo"
+            width={48}
+            height={48}
+            className={cn("absolute", {
+              "left-2 top-2": logoPosition === "top-left",
+              "right-2 top-2": logoPosition === "top-right",
+              "bottom-2 left-2": logoPosition === "bottom-left",
+              "bottom-2 right-2": logoPosition === "bottom-right",
+            })}
+          />
+        )}
         <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-white bg-opacity-80 opacity-0 transition-opacity group-hover:opacity-100">
           <Button className="gap-2" onClick={() => setVideo(null)}>
             <TrashIcon size={16} />

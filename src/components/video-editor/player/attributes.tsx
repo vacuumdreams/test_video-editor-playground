@@ -82,6 +82,7 @@ export const Attributes = ({
       <div className="flex cursor-pointer items-center space-x-2">
         <Checkbox
           id="logo"
+          disabled={true}
           className="bg-white"
           checked={logoPosition !== null}
           onCheckedChange={(val) => setLogoPosition(val ? "top-left" : null)}
@@ -104,6 +105,8 @@ export const Attributes = ({
         <SelectContent>
           <SelectItem value="top-left">Top left</SelectItem>
           <SelectItem value="top-right">Top right</SelectItem>
+          <SelectItem value="bottom-left">Bottom left</SelectItem>
+          <SelectItem value="bottom-right">Bottom right</SelectItem>
         </SelectContent>
       </Select>
       <div className="flex cursor-pointer items-center space-x-2">
