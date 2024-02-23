@@ -59,7 +59,9 @@ export const VideoEditor = ({
           {!video && (
             <div>
               <div className="flex aspect-video w-full items-center justify-center p-4">
-                <VideoUpload onSubmit={({ videoUrl }) => setVideo(videoUrl)} />
+                <VideoUpload onSubmit={({ videoUrl }) => setVideo(videoUrl)}>
+                  Upload video
+                </VideoUpload>
               </div>
               <div className="items-center justify-between border-x border-b border-slate-200 bg-white p-4 sm:flex">
                 <div className="mb-4 sm:mb-0">

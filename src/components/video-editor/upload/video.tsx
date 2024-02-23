@@ -1,4 +1,4 @@
-import { useRef, useCallback, FormEventHandler } from "react";
+import { useRef, useCallback, FormEventHandler, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
 function getVideoUrl(file: File): Promise<string> {
@@ -20,33 +20,40 @@ function getVideoUrl(file: File): Promise<string> {
 }
 
 type VideoUploadProps = {
+  children: ReactNode;
+  disabled?: boolean;
   onSubmit: (p: { videoUrl: string }) => void;
 };
 
-export const VideoUpload = ({ onSubmit }: VideoUploadProps) => {
+export const VideoUpload = ({
+  children,
+  disabled,
+  onSubmit,
+}: VideoUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const handleChange: FormEventHandler<HTMLFormElement> = useCallback(
     async (e) => {
-      // eslint-disable-next-line
+      // @ts-ignore
       const file = e.target.files?.[0];
       if (file) {
         const videoUrl = await getVideoUrl(file);
         onSubmit({ videoUrl });
       }
     },
-    [],
+    [onSubmit],
   );
 
   return (
     <form onChange={handleChange}>
       <input ref={inputRef} type="file" className="hidden" accept="video/*" />
       <Button
+        disabled={disabled}
         type="button"
         onClick={() => {
           inputRef.current?.click();
         }}
       >
-        Upload video
+        {children}
       </Button>
     </form>
   );

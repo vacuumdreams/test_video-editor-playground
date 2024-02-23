@@ -78,3 +78,32 @@ export async function doConcat(sources: string[]) {
   );
   return url;
 }
+
+export const getDuration = (src: string): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    // Create a new video element
+    const video = document.createElement("video");
+
+    // Set the video source
+    video.src = src;
+
+    // Event listener for when the video's metadata has loaded
+    const onMetadataLoaded = () => {
+      // Resolve the promise with the video duration
+      resolve(video.duration);
+    };
+
+    const onError = () => {
+      reject("Error loading video");
+    };
+
+    // Add event listeners
+    video.addEventListener("loadedmetadata", onMetadataLoaded);
+    video.addEventListener("error", onError);
+
+    return () => {
+      video.removeEventListener("loadedmetadata", onMetadataLoaded);
+      video.removeEventListener("error", onError);
+    };
+  });
+};

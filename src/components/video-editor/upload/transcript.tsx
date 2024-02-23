@@ -103,10 +103,14 @@ async function updateTranscript(
 }
 
 type TranscriptUploadProps = {
+  children: ReactNode;
   onSubmit: (transcript: TranscriptResult) => void;
 };
 
-export const TranscriptUpload = ({ onSubmit }: TranscriptUploadProps) => {
+export const TranscriptUpload = ({
+  children,
+  onSubmit,
+}: TranscriptUploadProps) => {
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const handleChange: FormEventHandler<HTMLFormElement> = useCallback(
@@ -129,7 +133,7 @@ export const TranscriptUpload = ({ onSubmit }: TranscriptUploadProps) => {
           inputRef.current?.click();
         }}
       >
-        Upload transcript
+        {children}
       </Button>
     </form>
   );

@@ -189,7 +189,9 @@ export const Transcript = ({
           <div className="flex w-full justify-center overflow-y-auto pt-12">
             <TranscriptUpload
               onSubmit={(transcript) => setTranscript(transcript)}
-            />
+            >
+              Upload transcript
+            </TranscriptUpload>
           </div>
         )}
       </div>

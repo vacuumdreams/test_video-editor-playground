@@ -114,7 +114,11 @@ export const VideoPlayer = ({
         className="h-2 w-full rounded-none"
       />
       <Controls transcript={transcript} />
-      <Attributes />
+      <Attributes
+        transcript={transcript}
+        setVideo={setVideo}
+        setTranscript={setTranscript}
+      />
       <div className="pl-8">
         <div className="relative">
           <VideoTrack

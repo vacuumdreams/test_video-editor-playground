@@ -20,8 +20,6 @@ type State = {
   duration: number;
   logoPosition: null | string;
   setLogoPosition: (position: null | string) => void;
-  addIntro: boolean;
-  setIntro: (addIntro: boolean) => void;
   showSubtitles: boolean;
   setSubtitles: (showSubtitles: boolean) => void;
 };
@@ -42,7 +40,6 @@ export const VideoProvider = ({
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [showSubtitles, setSubtitles] = useState(false);
-  const [addIntro, setIntro] = useState(false);
   const [logoPosition, setLogoPosition] = useState<null | string>(null);
   const [crop, setCrop] = useState<[number, number]>([0, 0]);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -89,8 +86,6 @@ export const VideoProvider = ({
         duration,
         logoPosition,
         setLogoPosition,
-        addIntro,
-        setIntro,
         showSubtitles,
         setSubtitles,
       }}
