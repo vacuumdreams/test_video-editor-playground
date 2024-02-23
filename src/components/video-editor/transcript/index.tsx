@@ -185,7 +185,7 @@ export const Transcript = ({
             Delete transcript
           </Button>
         )}
-        {transcript && (
+        {!transcript && (
           <div className="flex w-full justify-center overflow-y-auto pt-12">
             <TranscriptUpload
               onSubmit={(transcript) => setTranscript(transcript)}
