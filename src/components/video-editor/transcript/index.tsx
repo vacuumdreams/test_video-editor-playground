@@ -1,4 +1,4 @@
-import { ReactNode, useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   SearchIcon,
   TrashIcon,
@@ -99,7 +99,6 @@ export const Transcript = ({
   const [openConfirmIndex, setOpenConfirmIndex] = useState<null | string>(null);
   const { toast } = useToast();
   const { src, currentTime, duration } = useVideo();
-  const [data, setData] = useState<TranscriptLine[]>([]);
 
   const handleCut = useCallback(
     async (line: TranscriptLine) => {
@@ -134,7 +133,7 @@ export const Transcript = ({
 
   return (
     <div>
-      {data.length > 0 && (
+      {transcript && transcript.cues.length > 0 && (
         <div className="relative">
           <SearchIcon
             size="16"
@@ -149,7 +148,7 @@ export const Transcript = ({
         </div>
       )}
       <div className="pb-24 pt-4">
-        {data.map((line, i) => (
+        {transcript?.cues.map((line, i) => (
           <div
             key={i}
             className={cn("group my-2 rounded-lg p-2 transition-colors", {
@@ -177,7 +176,7 @@ export const Transcript = ({
             <p className="pl-8">{getText(line)}</p>
           </div>
         ))}
-        {data && data.length > 0 && (
+        {transcript && (
           <Button
             className="my-8 w-full gap-2"
             onClick={() => setTranscript(null)}
@@ -186,7 +185,7 @@ export const Transcript = ({
             Delete transcript
           </Button>
         )}
-        {data.length === 0 && (
+        {transcript && (
           <div className="flex w-full justify-center overflow-y-auto pt-12">
             <TranscriptUpload
               onSubmit={(transcript) => setTranscript(transcript)}
@@ -202,7 +201,7 @@ export const Transcript = ({
           }
         }}
       >
-        {openConfirmIndex && data && (
+        {openConfirmIndex && transcript && (
           <DialogContent className="sm:max-w-[425px]">
             {!isLoading && (
               <DialogHeader>
@@ -212,9 +211,14 @@ export const Transcript = ({
                 </DialogTitle>
                 <DialogDescription>
                   The time range from{" "}
-                  {formatTime(data[Number(openConfirmIndex)]?.startTime)} to{" "}
-                  {formatTime(data[Number(openConfirmIndex)]?.endTime)} will be
-                  removed from the video.
+                  {formatTime(
+                    transcript.cues[Number(openConfirmIndex)]?.startTime,
+                  )}{" "}
+                  to{" "}
+                  {formatTime(
+                    transcript.cues[Number(openConfirmIndex)]?.endTime,
+                  )}{" "}
+                  will be removed from the video.
                 </DialogDescription>
               </DialogHeader>
             )}
@@ -236,8 +240,8 @@ export const Transcript = ({
               <Button
                 disabled={isLoading}
                 onClick={() => {
-                  if (data && openConfirmIndex) {
-                    handleCut(data[Number(openConfirmIndex)]);
+                  if (transcript && openConfirmIndex) {
+                    handleCut(transcript.cues[Number(openConfirmIndex)]);
                   }
                 }}
               >

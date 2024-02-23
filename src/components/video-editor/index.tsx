@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { InfoIcon, PlayIcon, WandIcon, DownloadIcon } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ import { Transcript } from "./transcript";
 import { VideoPlayer } from "./player";
 import { VideoUpload } from "./upload/video";
 import { cn } from "@/lib/utils";
-import { TranscriptResult, parseTranscript } from "@/lib/transcript";
+import { TranscriptResult, parseTranscript, stringify } from "@/lib/transcript";
 
 type VideoEditorProps = {
   videoUrl: string;
@@ -31,6 +31,19 @@ export const VideoEditor = ({
 }: VideoEditorProps) => {
   const [video, setVideo] = useState<null | string>(null);
   const [transcript, setTranscript] = useState<null | TranscriptResult>(null);
+
+  const handleDownloadTranscript = useCallback(() => {
+    if (transcript) {
+      const content = stringify(transcript);
+      const url = window.URL.createObjectURL(new Blob([content]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `transcript.txt`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    }
+  }, [transcript]);
 
   return (
     <VideoProvider src={video}>
@@ -124,8 +137,8 @@ export const VideoEditor = ({
           {transcript && (
             <a
               className={cn("gap-2", buttonVariants({ variant: "default" }))}
-              href={transcript}
               download
+              onClick={handleDownloadTranscript}
             >
               <DownloadIcon />
               <span>Download transcript</span>
