@@ -8,12 +8,6 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -28,53 +22,13 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   getText,
   getPersonName,
-  parseTranscript,
-  removeLinesFromTranscript,
+  filterTranscript,
   TranscriptLine,
+  TranscriptResult,
 } from "@/lib/transcript";
 import { cn, formatTime } from "@/lib/utils";
 import { doCrop, doConcat } from "@/lib/video";
 import { useVideo } from "../provider";
-
-const transcriptError = (details?: ReactNode) => ({
-  title: (
-    <div className="mb-2 flex gap-2">
-      <XCircleIcon />
-      <span>Error parsing transcript</span>
-    </div>
-  ),
-  description: (
-    <div>
-      <div className="mb-4 text-slate-500">
-        <p>
-          Make sure your subtitles have the{" "}
-          <a
-            className="underline"
-            href="https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            correct format
-          </a>
-          :
-        </p>
-      </div>
-      <pre className="w-full overflow-x-scroll bg-slate-100 p-2 font-mono text-xs">
-        {`id
-hh:mm:ss.000 --> hh:mm:ss.000
-<v Speaker>Caption for the above time frame.`}
-      </pre>
-      {details && (
-        <Accordion type="single" collapsible className="mt-2 w-full">
-          <AccordionItem value="details">
-            <AccordionTrigger>more details</AccordionTrigger>
-            <AccordionContent>{details}</AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      )}
-    </div>
-  ),
-});
 
 const cutError = {
   title: (
@@ -112,42 +66,27 @@ const Person = ({ line }: { line: TranscriptLine }) => {
   );
 };
 
-async function updateTranscript(
-  transcript: string,
-  setData: (data: TranscriptLine[]) => void,
-  toast: ReturnType<typeof useToast>["toast"],
-) {
-  try {
-    const result = await parseTranscript(transcript);
-    if (result.errors.length > 0) {
-      toast(
-        // @ts-ignore
-        transcriptError(
-          <div className="bg-red-100 p-2 font-mono text-xs">
-            {result.errors.map((e, i) => (
-              <span key={i}>{`${e}`}</span>
-            ))}
-          </div>,
-        ),
-      );
-      return;
-    }
+const createFilterFn = (d: TranscriptLine) => (cue: TranscriptLine) => {
+  let isMatch = false;
+  let offset = 0;
 
-    if (result.cues.length === 0) {
-      // @ts-ignore
-      toast(transcriptError("No valid cues found in the transcript"));
-      return;
-    }
-    setData(result.cues);
-  } catch (err) {
-    // @ts-ignore
-    toast(transcriptError(`${err}`));
+  if (cue.startTime === d.startTime && cue.endTime === d.endTime) {
+    isMatch = true;
   }
-}
+
+  if (d.endTime < cue.startTime) {
+    offset = offset + (d.endTime - d.startTime);
+  }
+
+  return {
+    isMatch,
+    offset,
+  };
+};
 
 type TranscriptProps = {
-  transcript: string | null;
-  setTranscript: (transcript: string | null) => void;
+  transcript: null | TranscriptResult;
+  setTranscript: (transcript: null | TranscriptResult) => void;
   setVideo: (url: string | null) => void;
 };
 
@@ -162,14 +101,6 @@ export const Transcript = ({
   const { src, currentTime, duration } = useVideo();
   const [data, setData] = useState<TranscriptLine[]>([]);
 
-  useEffect(() => {
-    if (transcript) {
-      updateTranscript(transcript, setData, toast);
-    } else {
-      setData([]);
-    }
-  }, [transcript, toast, setData]);
-
   const handleCut = useCallback(
     async (line: TranscriptLine) => {
       setLoading(true);
@@ -182,9 +113,10 @@ export const Transcript = ({
 
           const newSrc = await doConcat([src1, src2]);
           setVideo(newSrc);
-          const newTranscript = await removeLinesFromTranscript(transcript, [
-            line,
-          ]);
+          const newTranscript = await filterTranscript(
+            transcript,
+            createFilterFn(line),
+          );
           setTranscript(newTranscript);
           setLoading(false);
           setOpenConfirmIndex(null);
@@ -257,7 +189,7 @@ export const Transcript = ({
         {data.length === 0 && (
           <div className="flex w-full justify-center overflow-y-auto pt-12">
             <TranscriptUpload
-              onSubmit={({ transcript }) => setTranscript(transcript)}
+              onSubmit={(transcript) => setTranscript(transcript)}
             />
           </div>
         )}

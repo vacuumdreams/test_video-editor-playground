@@ -18,6 +18,7 @@ import { Transcript } from "./transcript";
 import { VideoPlayer } from "./player";
 import { VideoUpload } from "./upload/video";
 import { cn } from "@/lib/utils";
+import { TranscriptResult, parseTranscript } from "@/lib/transcript";
 
 type VideoEditorProps = {
   videoUrl: string;
@@ -29,7 +30,7 @@ export const VideoEditor = ({
   transcript: defaultTranscript,
 }: VideoEditorProps) => {
   const [video, setVideo] = useState<null | string>(null);
-  const [transcript, setTranscript] = useState<null | string>(null);
+  const [transcript, setTranscript] = useState<null | TranscriptResult>(null);
 
   return (
     <VideoProvider src={video}>
@@ -100,9 +101,10 @@ export const VideoEditor = ({
           {!video && !transcript && (
             <Button
               className="flex gap-2"
-              onClick={() => {
+              onClick={async () => {
+                const transcript = await parseTranscript(defaultTranscript);
                 setVideo(defaultVideo);
-                setTranscript(defaultTranscript);
+                setTranscript(transcript);
               }}
             >
               <WandIcon />

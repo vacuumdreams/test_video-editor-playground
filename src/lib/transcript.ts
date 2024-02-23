@@ -8,6 +8,7 @@ import {
 
 import { formatTime } from "@/lib/utils";
 
+export type TranscriptResult = ParsedCaptionsResult;
 export type TranscriptLine = VTTCue;
 
 export async function parseTranscript(
@@ -45,38 +46,20 @@ export const getText = (cue: VTTCue) => {
   return data.join("");
 };
 
-export async function removeRangesFromTranscript(
-  text: string,
-  ranges: Array<[number, number]>,
+type FilterFnResult = {
+  isMatch: boolean;
+  offset: number;
+};
+
+export async function filterTranscript(
+  transcript: TranscriptResult,
+  filterFn: (cue: VTTCue) => FilterFnResult,
 ) {
-  const transcript = await parseTranscript(text);
-
   const cues = transcript.cues.reduce<VTTCue[]>((acc, cue) => {
-    const { isMatch, offset } = ranges.reduce<{
-      isMatch: boolean;
-      offset: number;
-    }>(
-      (acc, r) => {
-        if (cue.startTime >= r[0] && cue.endTime <= r[1]) {
-          acc.isMatch = true;
-        }
-
-        if (r[1] < cue.endTime) {
-          acc.offset = acc.offset + (r[1] - r[0]);
-        }
-
-        return acc;
-      },
-      {
-        isMatch: false,
-        offset: 0,
-      },
-    );
-
+    const { isMatch, offset } = filterFn(cue);
     if (isMatch) {
       return acc;
     }
-
     acc.push(
       new VTTCue(
         Math.max(0, cue.startTime - offset),
@@ -84,55 +67,9 @@ export async function removeRangesFromTranscript(
         cue.text,
       ),
     );
-
     return acc;
   }, []);
-  return stringify({ ...transcript, cues });
-}
-
-export async function removeLinesFromTranscript(
-  text: string,
-  data: TranscriptLine[],
-) {
-  const transcript = await parseTranscript(text);
-
-  const cues = transcript.cues.reduce<VTTCue[]>((acc, cue) => {
-    const { isMatch, offset } = data.reduce<{
-      isMatch: boolean;
-      offset: number;
-    }>(
-      (acc, d) => {
-        if (cue.startTime === d.startTime && cue.endTime === d.endTime) {
-          acc.isMatch = true;
-        }
-
-        if (d.endTime < cue.startTime) {
-          acc.offset = acc.offset + (d.endTime - d.startTime);
-        }
-
-        return acc;
-      },
-      {
-        isMatch: false,
-        offset: 0,
-      },
-    );
-
-    if (isMatch) {
-      return acc;
-    }
-
-    acc.push(
-      new VTTCue(
-        Math.max(0, cue.startTime - offset),
-        cue.endTime - offset,
-        cue.text,
-      ),
-    );
-
-    return acc;
-  }, []);
-  return stringify({ ...transcript, cues });
+  return { ...transcript, cues };
 }
 
 // custom stringifier as there's absolutely nothing in the library to do this :(

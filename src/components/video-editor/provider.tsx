@@ -11,7 +11,8 @@ type State = {
   videoRef: React.MutableRefObject<HTMLVideoElement | null>;
   src: string | null;
   isPlaying: boolean;
-  setIsPlaying: (isPlaying: boolean) => void;
+  togglePlaying: () => void;
+  setPlaying: (isPlaying: boolean) => void;
   crop: [number, number];
   setCrop: (crop: [number, number]) => void;
   currentTime: number;
@@ -63,7 +64,24 @@ export const VideoProvider = ({
         src,
         videoRef,
         isPlaying,
-        setIsPlaying,
+        togglePlaying: () => {
+          if (isPlaying) {
+            videoRef.current?.pause();
+            setIsPlaying(false);
+          } else {
+            videoRef.current?.play();
+            setIsPlaying(true);
+          }
+        },
+        setPlaying: (isPlaying: boolean) => {
+          if (isPlaying) {
+            videoRef.current?.pause();
+            setIsPlaying(false);
+          } else {
+            videoRef.current?.play();
+            setIsPlaying(true);
+          }
+        },
         crop,
         setCrop,
         currentTime,

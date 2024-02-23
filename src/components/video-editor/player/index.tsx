@@ -8,14 +8,42 @@ import { VideoTrack } from "./tracks";
 import { PlaySlider } from "./play-slider";
 import { useVideo } from "../provider";
 import { doCrop } from "@/lib/video";
-import { removeRangesFromTranscript } from "@/lib/transcript";
+import {
+  filterTranscript,
+  TranscriptResult,
+  TranscriptLine,
+} from "@/lib/transcript";
 import { useCallback } from "react";
 
 type VideoPlayerProps = {
-  transcript: string | null;
+  transcript: TranscriptResult | null;
   setVideo: (url: string | null) => void;
-  setTranscript: (transcript: string | null) => void;
+  setTranscript: (transcript: TranscriptResult | null) => void;
 };
+
+const createCueFilter =
+  (ranges: Array<[number, number]>) => (cue: TranscriptLine) => {
+    return ranges.reduce<{
+      isMatch: boolean;
+      offset: number;
+    }>(
+      (acc, r) => {
+        if (cue.startTime >= r[0] && cue.endTime <= r[1]) {
+          acc.isMatch = true;
+        }
+
+        if (r[1] < cue.endTime) {
+          acc.offset = acc.offset + (r[1] - r[0]);
+        }
+
+        return acc;
+      },
+      {
+        isMatch: false,
+        offset: 0,
+      },
+    );
+  };
 
 export const VideoPlayer = ({
   transcript,
@@ -25,19 +53,13 @@ export const VideoPlayer = ({
   const {
     src,
     videoRef,
-    isPlaying,
-    setIsPlaying,
     crop,
     setCrop,
+    setPlaying,
     duration,
     currentTime,
     setCurrentTime,
-    logoPosition,
-    setLogoPosition,
-    addIntro,
-    setIntro,
     showSubtitles,
-    setSubtitles,
   } = useVideo();
 
   const handleCrop = useCallback(async () => {
@@ -45,16 +67,17 @@ export const VideoPlayer = ({
       const newSrc = await doCrop(src, crop[0], crop[1]);
 
       if (transcript) {
-        const newTranscript = await removeRangesFromTranscript(transcript, [
+        const filterFn = createCueFilter([
           [0, crop[0]],
           [crop[1], duration],
         ]);
+        const newTranscript = await filterTranscript(transcript, filterFn);
         setTranscript(newTranscript);
       }
 
       setVideo(newSrc);
     }
-  }, [transcript, duration, src, crop[0], crop[1]]);
+  }, [src, transcript, duration, setTranscript, setVideo, crop]);
 
   return (
     <div className="relative">
@@ -63,7 +86,7 @@ export const VideoPlayer = ({
           preload="auto"
           ref={videoRef}
           className="aspect-video w-full"
-          onEnded={() => setIsPlaying(false)}
+          onEnded={() => setPlaying(false)}
           onTimeUpdate={() =>
             setCurrentTime(videoRef.current?.currentTime || 0)
           }
@@ -90,30 +113,8 @@ export const VideoPlayer = ({
         value={(currentTime * 100) / duration}
         className="h-2 w-full rounded-none"
       />
-      <Controls
-        crop={crop}
-        setCrop={setCrop}
-        duration={duration}
-        currentTime={currentTime}
-        isPlaying={isPlaying}
-        setPlaying={() => {
-          if (isPlaying) {
-            videoRef.current?.pause();
-            setIsPlaying(false);
-          } else {
-            videoRef.current?.play();
-            setIsPlaying(true);
-          }
-        }}
-      />
-      <Attributes
-        showSubtitles={showSubtitles}
-        setSubtitles={setSubtitles}
-        addIntro={addIntro}
-        setAddIntro={setIntro}
-        logoPosition={logoPosition}
-        setLogoPosition={setLogoPosition}
-      />
+      <Controls transcript={transcript} />
+      <Attributes />
       <div className="pl-8">
         <div className="relative">
           <VideoTrack

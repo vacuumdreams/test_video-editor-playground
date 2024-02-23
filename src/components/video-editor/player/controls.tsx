@@ -9,30 +9,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { formatTime } from "@/lib/utils";
+import { cn, formatTime } from "@/lib/utils";
+import { TranscriptResult } from "@/lib/transcript";
+import { useVideo } from "../provider";
 
 type ControlsProps = {
-  currentTime: number;
-  duration: number;
-  crop: [number, number];
-  setCrop: (crop: [number, number]) => void;
-  isPlaying: boolean;
-  setPlaying: (playing: boolean) => void;
+  transcript: null | TranscriptResult;
 };
 
-export const Controls = ({
-  crop,
-  currentTime,
-  isPlaying,
-  setPlaying,
-}: ControlsProps) => {
+export const Controls = ({ transcript }: ControlsProps) => {
+  const { crop, setCrop, duration, currentTime, isPlaying, togglePlaying } =
+    useVideo();
+
   return (
     <div className="items-center justify-between border-x border-slate-200 bg-white p-4 md:flex">
       <div className="mb-4 md:mb-0">
-        <Button
-          className="flex w-32 gap-4"
-          onClick={() => setPlaying(!isPlaying)}
-        >
+        <Button className="flex w-32 gap-4" onClick={() => togglePlaying()}>
           {!isPlaying && <PlayIcon />}
           {isPlaying && <PauseIcon />}
           {formatTime(currentTime)}
@@ -41,13 +33,29 @@ export const Controls = ({
       <div className="flex gap-2">
         <div className="flex items-center space-x-2">
           <Label htmlFor="auto-crop">Auto-crop</Label>
-          <Switch id="auto-crop" disabled />
+          <Switch
+            id="auto-crop"
+            disabled={!transcript}
+            onCheckedChange={(v) => {
+              if (v) {
+                const start = transcript?.cues[0]?.startTime || 0;
+                const end =
+                  transcript?.cues[transcript?.cues.length - 1]?.endTime || 0;
+                setCrop([start, end]);
+              } else {
+                setCrop([0, duration]);
+              }
+            }}
+          />
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <InfoIcon className="text-slate-200" />
+                <InfoIcon className={cn({ "text-slate-200": !!transcript })} />
               </TooltipTrigger>
-              <TooltipContent>This feature is not available.</TooltipContent>
+              <TooltipContent>
+                {transcript && "Crop your video content to fit the subtitles."}
+                {!transcript && "This feature is not available."}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>

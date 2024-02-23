@@ -7,24 +7,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useVideo } from "../provider";
 
-type AttributesProps = {
-  showSubtitles: boolean;
-  setSubtitles: (value: boolean) => void;
-  addIntro: boolean;
-  setAddIntro: (value: boolean) => void;
-  logoPosition: string | null;
-  setLogoPosition: (value: string | null) => void;
-};
+export const Attributes = () => {
+  const {
+    showSubtitles,
+    setSubtitles,
+    addIntro,
+    setIntro,
+    logoPosition,
+    setLogoPosition,
+  } = useVideo();
 
-export const Attributes = ({
-  showSubtitles,
-  setSubtitles,
-  addIntro,
-  setAddIntro,
-  logoPosition,
-  setLogoPosition,
-}: AttributesProps) => {
   return (
     <div className="flex gap-4 bg-slate-200 p-4">
       <div className="flex cursor-pointer items-center space-x-2">
@@ -48,7 +42,7 @@ export const Attributes = ({
           id="intro"
           className="bg-white"
           checked={addIntro}
-          onCheckedChange={(val) => setAddIntro(!!val)}
+          onCheckedChange={(val) => setIntro(!!val)}
         />
         <Label
           htmlFor="intro"
